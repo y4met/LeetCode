@@ -1,4 +1,5 @@
 #include <vector>
+#include <queue>
 using namespace std;
 
 struct ListNode {
@@ -47,5 +48,44 @@ class Solution {
 public:
     ListNode* mergeKLists(vector<ListNode*>& lists) {
         return mergeKLists(lists, 0, lists.size());
+    }
+};
+
+// 最小堆
+// 将所有可能是当前最小的节点入堆,再从堆中弹出最小节点
+class Solution{
+public:
+    ListNode* mergeKLists(vector<ListNode*>& List){
+        // 最小堆比较函数
+        auto cmp = [](const ListNode* a, const ListNode* b){
+            return a->val > b->val;
+        };
+
+        // 用优先队列实现最小堆
+        priority_queue<ListNode*, vector<ListNode*>, decltype(cmp)> pq;
+        // 初始将所有非空链表的头节点入堆
+        for(auto head: List){
+            if(head){
+                pq.push(head);
+            }
+        }
+
+        ListNode dummy{};
+        auto cur = &dummy;
+        // 
+        while(!pq.empty()){
+            // 当前堆中最小节点(即堆顶节点)
+            auto node = pq.top();
+            // 弹出堆顶
+            pq.pop();
+            // 如果堆顶节点有下一个节点,就入堆
+            if(node->next){
+                pq.push(node->next);
+            }
+            // 最小节点接入结果链表
+            cur->next = node;
+            cur = cur->next;
+        }
+        return dummy.next;
     }
 };
